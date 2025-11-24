@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Grow - Emotion Recognition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #50054F 0%, #060308 50%, #040404 100%);
+      color: white;
+    }
+
+    .dashboard {
+      width: 100%;
+      height: 100%;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* TOP BAR */
+    .top-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 8px;
+      position: relative;
+    }
+
+    .logo {
+      height: 46px;
+    }
+
+    .top-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    .top-right {
+      display: flex;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .icon-btn img {
+      width: 22px;
+    }
+
+    .icon-btn:hover { transform: scale(1.05); }
+
+
+    /* GRID LAYOUT */
+    .layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 240px 1fr 240px;
+      gap: 22px;
+      margin-top: 25px;
+      min-height: 0;
+    }
+
+    /* LEFT PANEL WITH FIXED HEIGHT + SCROLL */
+    .side-panel {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 14px;
+      border-radius: 8px;
+      background: rgba(90, 0, 120, 0.28);
+      backdrop-filter: blur(8px);
+
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 12px;
+      color: #e3c8e2;
+      flex-shrink: 0;
+    }
+
+    #cameraList {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    /* DARK THIN SCROLLBAR */
+    .side-panel::-webkit-scrollbar,
+    #cameraList::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .side-panel::-webkit-scrollbar-track,
+    #cameraList::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 10px;
+    }
+
+    .side-panel::-webkit-scrollbar-thumb,
+    #cameraList::-webkit-scrollbar-thumb {
+      background: rgba(90, 0, 120, 0.6);
+      border-radius: 10px;
+    }
+
+    .side-panel::-webkit-scrollbar-thumb:hover,
+    #cameraList::-webkit-scrollbar-thumb:hover {
+      background: rgba(130, 0, 160, 0.8);
+    }
+
+    .empty-msg {
+      text-align: center;
+      font-size: 13px;
+      opacity: 0.7;
+      padding-top: 40px;
+    }
+
+    .camera-btn {
+      width: 100%;
+      background: #4a0249;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.2s;
+      flex-shrink: 0;
+    }
+
+    .camera-btn:hover {
+      background: #7d0eb7;
+      transform: translateY(-2px);
+    }
+
+    /* CENTER VIDEO */
+    .video-box {
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 10px;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #emotionPlayer {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+    }
+
+    .video-placeholder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 20px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    /* RIGHT PANEL */
+    .capture-box {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 14px;
+      border-radius: 8px;
+      background: rgba(90, 0, 120, 0.28);
+      backdrop-filter: blur(8px);
+    }
+
+    .capture-item {
+      flex: 1;
+      min-height: 90px;
+      border-radius: 8px;
+      background: #4a0249;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .emotion-bar {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr) 170px;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .emo-box {
+      background: #4a0249;
+      padding: 10px 14px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .emo-icon { width: 32px; }
+
+    .faces-box {
+      text-align: center;
+      padding: 10px;
+      background: #4a0249;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="dashboard">
+
+    <!-- HEADER -->
+    <div class="top-bar">
+
+      <img src="images/logo/Grow logo.png" class="logo">
+
+      <div class="top-title">Emotion Recognition</div>
+
+      <div class="top-right">
+
+        <div class="icon-btn" id="backBtn">
+          <img src="images/emoji/back option icon.png">
+        </div>
+
+        <div class="icon-btn" id="addCameraIcon">
+          <img src="images/emoji/add icon.png">
+        </div>
+
+        <div class="icon-btn" id="dashboardBtn">
+          <img src="images/emoji/dashboard icon.png">
+        </div>
+
+        <div class="icon-btn" id="homeBtn">
+          <img src="images/emoji/home icon.png">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+
+      <!-- CAMERA PANEL -->
+      <div class="side-panel">
+
+        <div class="panel-title">Attached Camera</div>
+
+        <div id="cameraList"></div>
+      </div>
+
+      <!-- VIDEO FEED -->
+      <div class="video-box" id="videoFeed">
+        <video id="emotionPlayer" autoplay muted controls></video>
+        <div class="video-placeholder" id="videoPlaceholder">
+          Live Stream Detection
+        </div>
+      </div>
+
+      <!-- CAPTURE AREA -->
+      <div class="capture-box">
+        <div class="capture-item"></div>
+        <div class="capture-item"></div>
+        <div class="capture-item"></div>
+      </div>
+
+    </div>
+
+    <!-- EMOTION BAR -->
+    <div class="emotion-bar">
+      <div class="emo-box"><img src="images/emoji/happy cool.png" class="emo-icon"> Happy 0%</div>
+      <div class="emo-box"><img src="images/emoji/sad.png" class="emo-icon"> Sad 0%</div>
+      <div class="emo-box"><img src="images/emoji/fear.png" class="emo-icon"> Fear 0%</div>
+      <div class="emo-box"><img src="images/emoji/cry.png" class="emo-icon"> Crying 0%</div>
+      <div class="emo-box"><img src="images/emoji/smile.png" class="emo-icon"> Neutral 0%</div>
+      <div class="emo-box"><img src="images/emoji/angry.png" class="emo-icon"> Angry 0%</div>
+
+      <div class="faces-box">
+        <h3>Total faces<br>Analyzed</h3>
+        <p>0%</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- HLS.JS -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+  <script>
+    homeBtn.onclick = () => window.location.href = "home.html";
+    backBtn.onclick = () => window.location.href = "dashboard.html";
+    dashboardBtn.onclick = () => window.location.href = "dashboard.html";
+    addCameraIcon.onclick = () => window.location.href = "attached-camera.html";
+
+    const cameraList = document.getElementById("cameraList");
+    const videoPlaceholder = document.getElementById("videoPlaceholder");
+    const emotionPlayer = document.getElementById("emotionPlayer");
+
+    let hlsPlayer = null;
+
+    function buildRtspUrl(cam) {
+      if (!cam) return "";
+
+      // If full RTSP already stored (auto-generated on Attached Camera page), just use it
+      if (cam.rtsp && cam.rtsp.toLowerCase().startsWith("rtsp://")) {
+        return cam.rtsp.trim();
+      }
+
+      const ip = cam.ip;
+      const user = cam.user;
+      const pass = cam.pass;
+
+      const port = (cam.rtspPort && cam.rtspPort.trim()) ||
+                   (cam.port && cam.port.trim()) || "554";
+
+      if (!ip || !user || !pass) return "";
+
+      const path = (cam.rtsp && !cam.rtsp.toLowerCase().startsWith("rtsp://"))
+        ? cam.rtsp.replace(/^\/+/, "")
+        : "Streaming/Channels/101";
+
+      return `rtsp://${encodeURIComponent(user)}:${encodeURIComponent(pass)}@${ip}:${port}/${path}`;
+    }
+
+    function playStream(hlsUrl) {
+      if (!hlsUrl) return;
+
+      videoPlaceholder.style.display = "none";
+
+      if (hlsPlayer) {
+        hlsPlayer.destroy();
+        hlsPlayer = null;
+      }
+
+      if (Hls.isSupported()) {
+        hlsPlayer = new Hls();
+        hlsPlayer.loadSource(hlsUrl);
+        hlsPlayer.attachMedia(emotionPlayer);
+      } else {
+        emotionPlayer.src = hlsUrl;
+      }
+
+      emotionPlayer.play().catch(() => {});
+    }
+
+    function loadCameras() {
+      const cameras = JSON.parse(localStorage.getItem("cameras") || "[]");
+      cameraList.innerHTML = "";
+
+      if (cameras.length === 0) {
+        cameraList.innerHTML = `<p class="empty-msg">Add a camera by clicking the Add icon.</p>`;
+        return;
+      }
+
+      cameras.forEach(cam => {
+        const btn = document.createElement("button");
+        btn.className = "camera-btn";
+        btn.innerText = cam.name || "Unnamed Camera";
+
+        btn.onclick = () => {
+          const rtspUrl = buildRtspUrl(cam);
+          if (!rtspUrl) {
+            alert("RTSP details missing for this camera.");
+            return;
+          }
+
+          fetch("/start-stream", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: rtspUrl })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.hlsUrl) {
+              playStream(data.hlsUrl);
+            } else {
+              alert("Unable to start stream.");
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            alert("Error starting stream. Check server/FFmpeg.");
+          });
+        };
+
+        cameraList.appendChild(btn);
+      });
+    }
+
+    loadCameras();
+  </script>
+
+</body>
+
+</html>

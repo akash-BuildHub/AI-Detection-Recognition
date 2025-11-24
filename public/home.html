@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Grow - AI Detection Recognition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #50054F 0%, #060308 50%, #040404 100%);
+      color: white;
+    }
+
+    .dashboard {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      padding: 40px 70px;
+    }
+
+    /* TOP BAR */
+    .top-bar {
+      position: absolute;
+      top: 40px;
+      left: 70px;
+      right: 70px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .top-bar img {
+      height: 46px;
+      width: auto;
+    }
+
+    .info-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(12px);
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* LEFT TEXT */
+    .left {
+      position: absolute;
+      top: 25%;
+      left: 70px;
+      max-width: 450px;
+    }
+
+    .left h1 {
+      font-size: 64px;
+      font-weight: 700;
+      line-height: 1.40;
+      color: #ff47d3;
+      margin-bottom: 24px;
+    }
+
+    .left p {
+      font-size: 18px;
+      margin-bottom: 50px;
+      margin-top: 100px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* FIXED FULL-CLICKABLE BUTTON */
+    .cta-btn {
+      display: inline-block;            /* ensures full button clickability */
+      user-select: none;                /* prevents text selection during click */
+      padding: 16px 38px;
+      border-radius: 999px;
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+      border: none;
+      cursor: pointer;
+      background: radial-gradient(circle at top left, #ff4dd8 0%, #b000ff 40%, #5f00ff 100%);
+      box-shadow: 0 0 16px rgba(255, 77, 216, 0.9), 0 24px 40px rgba(0, 0, 0, 0.7);
+      transition: 0.2s ease;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 24px rgba(255, 77, 216, 1), 0 30px 50px rgba(0, 0, 0, 0.85);
+    }
+
+    /* ROBOT */
+    .right {
+      position: fixed;
+      bottom: 100px;
+      right: 5px;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .robot {
+      width: 500px;
+      z-index: 3;
+      filter: drop-shadow(0px 20px 40px rgba(0, 0, 0, 0.9));
+    }
+
+    .robot-glow {
+      position: absolute;
+      bottom: 200px;
+      right: 170px;
+      width: 170px;
+      height: 170px;
+      background: radial-gradient(circle, rgba(0, 255, 255, 0.4), transparent 70%);
+      filter: blur(8px);
+      z-index: 1;
+    }
+
+    /* EMOJI STRING LINES */
+    .emoji-strip {
+      position: absolute;
+      top: 100px;
+      left: 70px;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .string-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      border-left: 2px dotted rgba(255, 255, 255, 0.35);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .emoji-wrap {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .emoji-wrap img {
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.8));
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-18px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 25px;
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      opacity: 0.45;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 992px) {
+      .left h1 { font-size: 48px; }
+      .robot { width: 350px; }
+      .emoji-wrap img { width: 50px; }
+    }
+
+    @media (max-width: 768px) {
+      body { overflow-y: auto; }
+      .dashboard { padding: 20px; }
+      .top-bar { position: relative; margin-bottom: 30px; left: 0; right: 0; }
+      .left { position: relative; top: 0; left: 0; max-width: 100%; text-align: center; }
+      .left h1 { font-size: 40px; }
+      .left p { margin-top: 40px; }
+      .right { position: relative; margin-top: 50px; justify-content: center; }
+      .robot { width: 60%; }
+      .emoji-strip { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .left h1 { font-size: 34px; }
+      .cta-btn { padding: 14px 30px; font-size: 16px; }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+  <div class="top-bar">
+    <img src="images/logo/Grow logo.png" alt="Grow Logo" />
+    <div class="info-icon">i</div>
+  </div>
+
+  <div class="left">
+    <h1>AI <br>Detection Recognition</h1>
+    <p>Your Cameras see | Our AI Understands</p>
+
+    <!-- FULL BUTTON CLICK WORKS NOW -->
+    <button class="cta-btn" id="startBtn">Start Recognize</button>
+  </div>
+
+  <!-- EMOTIONAL FLOATING EMOJIS -->
+  <div class="emoji-strip">
+
+    <div class="string-line" style="left: 492px; height: 200px;"></div>
+    <div class="emoji-wrap" style="left: 460px; top: 180px;">
+      <img src="images/emoji/happy cool.png" />
+    </div>
+
+    <div class="string-line" style="left: 563px; height: 100px;"></div>
+    <div class="emoji-wrap" style="left: 530px; top: 90px;">
+      <img src="images/emoji/angry.png" />
+    </div>
+
+    <div class="string-line" style="left: 633px; height: 250px;"></div>
+    <div class="emoji-wrap" style="left: 600px; top: 240px;">
+      <img src="images/emoji/surprised.png" />
+    </div>
+
+    <div class="string-line" style="left: 702px; height: 150px;"></div>
+    <div class="emoji-wrap" style="left: 670px; top: 140px;">
+      <img src="images/emoji/fear.png" />
+    </div>
+
+    <div class="string-line" style="left: 775px; height: 320px;"></div>
+    <div class="emoji-wrap" style="left: 740px; top: 290px;">
+      <img src="images/emoji/cry.png" />
+    </div>
+
+    <div class="string-line" style="left: 843px; height: 42px;"></div>
+    <div class="emoji-wrap" style="left: 810px; top: 40px;">
+      <img src="images/emoji/think.png" />
+    </div>
+
+    <div class="string-line" style="left: 910px; height: 200px;"></div>
+    <div class="emoji-wrap" style="left: 880px; top: 160px;">
+      <img src="images/emoji/smile.png" />
+    </div>
+
+  </div>
+
+  <div class="robot-glow"></div>
+
+  <div class="right">
+    <img src="images/logo/Robot logo.png" class="robot" />
+  </div>
+
+  <div class="footer">Designed and developed by Grow</div>
+
+</div>
+
+<script>
+  // FULL BUTTON CLICK EVENT
+  document.getElementById("startBtn").onclick = function () {
+    window.location.href = "dashboard.html";
+  };
+</script>
+
+</body>
+</html>

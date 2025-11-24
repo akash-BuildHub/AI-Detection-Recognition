@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Grow - Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #50054F 0%, #060308 50%, #040404 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* -------- HEADER -------- */
+    .header {
+      width: 100%;
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    .logo {
+      height: 55px;
+    }
+
+    .dashboard-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    /* Home + Add Icon Styling */
+    .icon-box {
+      display: flex;
+      gap: 12px;
+    }
+
+    .home-icon, .add-icon, .dashboard-icon {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1.6px solid rgba(255, 255, 255, 0.6);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .home-icon:hover, .add-icon:hover, .dashboard-icon:hover {
+      transform: scale(1.05);
+    }
+
+    .home-icon img, .add-icon img, .dashboard-icon img {
+      width: 20px;
+      opacity: 0.8;
+    }
+
+    /* -------- GRID (4×3) -------- */
+    .grid-container {
+      flex: 1;
+      width: 90%;
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .grid-box {
+      background: #4a0249;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .grid-box:hover {
+      background: #c300ff;
+      transform: translateY(-2px);
+    }
+
+    .grid-box.selected {
+      background: #8701af;
+    }
+
+    /* -------- START BUTTON -------- */
+    .start-btn {
+      margin: 20px auto 30px;
+      background: #8d05ab;
+      padding: 14px 48px;
+      border-radius: 16px;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: 0.2s;
+    }
+
+    .start-btn:hover {
+      background: #c300ff;
+      transform: translateY(-2px);
+    }
+
+    .start-btn:disabled {
+      background: #4a0249;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <img src="images/logo/Grow logo.png" class="logo">
+
+    <div class="dashboard-title">DASHBOARD</div>
+
+    <div class="icon-box">
+      <div class="dashboard-icon" id="dashboardBtn">
+        <img src="images/emoji/dashboard icon.png">
+      </div>
+
+      <div class="add-icon" id="addBtn">
+        <img src="images/emoji/add icon.png">
+      </div>
+
+      <div class="home-icon" id="homeBtn">
+        <img src="images/emoji/home icon.png">
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 × 3 GRID BOXES -->
+  <div class="grid-container">
+
+    <div class="grid-box algorithm-box" data-algorithm="emotion">Emotion<br>Recognition</div>
+    <div class="grid-box algorithm-box" data-algorithm="face">Face<br>Identification</div>
+    <div class="grid-box algorithm-box" data-algorithm="attendance">Attendance</div>
+    <div class="grid-box algorithm-box" data-algorithm="person-count">Person Count</div>
+
+    <div class="grid-box algorithm-box" data-algorithm="vehicle">Vehicle Detection</div>
+    <div class="grid-box"> </div>
+    <div class="grid-box"> </div>
+    <div class="grid-box"> </div>
+
+    <div class="grid-box"> </div>
+    <div class="grid-box"> </div>
+    <div class="grid-box"> </div>
+    <div class="grid-box"> </div>
+
+  </div>
+
+  <!-- START BUTTON -->
+  <button class="start-btn" id="startBtn">Start</button>
+
+<script>
+  let selectedAlgorithm = null;
+  
+  // Algorithm to page mapping
+  const algorithmPages = {
+    emotion: "emotion-recognition.html",
+    face: "face-identification.html",
+    attendance: "attendance.html",
+    "person-count": "person-count.html",
+    vehicle: "vehicle-detection.html"
+  };
+
+  // Home button → go home
+  document.getElementById("homeBtn").onclick = function () {
+    window.location.href = "home.html";
+  };
+
+  // Add button → go to Attached Cameras page
+  document.getElementById("addBtn").onclick = function () {
+    window.location.href = "attached-camera.html";
+  };
+
+  // Dashboard button → stay on dashboard
+  document.getElementById("dashboardBtn").onclick = function () {
+    window.location.href = "dashboard.html";
+  };
+
+  // Select algorithm boxes
+  const algorithmBoxes = document.querySelectorAll('.algorithm-box');
+  
+  algorithmBoxes.forEach(box => {
+    box.addEventListener('click', function() {
+      // Remove selected class from all boxes
+      algorithmBoxes.forEach(b => b.classList.remove('selected'));
+      
+      // Add selected class to clicked box
+      this.classList.add('selected');
+      
+      // Set the selected algorithm
+      selectedAlgorithm = this.getAttribute('data-algorithm');
+      
+      // Enable the start button
+      document.getElementById("startBtn").disabled = false;
+    });
+  });
+
+  // Start button → open the appropriate algorithm page
+  document.getElementById("startBtn").onclick = function () {
+    if (selectedAlgorithm && algorithmPages[selectedAlgorithm]) {
+      window.location.href = algorithmPages[selectedAlgorithm];
+    } else {
+      alert("Please select an algorithm first.");
+    }
+  };
+
+  // Initially disable the start button
+  document.getElementById("startBtn").disabled = true;
+</script>
+
+</body>
+</html>
