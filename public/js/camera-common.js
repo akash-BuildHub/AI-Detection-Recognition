@@ -101,4 +101,3 @@ function loadAttachedCameras(listElementId, onCameraClick) {
     list.appendChild(btn);
   });
 }
-
